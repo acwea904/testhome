@@ -51,4 +51,4 @@ fi
 
 # 启动 Next.js 应用
 echo "Starting Next.js application on port ${PORT}..."
-exec npm start
+exec npm run start
