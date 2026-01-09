@@ -27,15 +27,20 @@ FROM node:18-slim
 
 ENV NODE_ENV=production
 ENV PORT=3000
+ENV TZ=Asia/Shanghai
 
-# 安装哪吒 Agent 依赖
+# 安装必要的工具
 RUN apt-get update && apt-get install -y \
-    unzip \
     curl \
-    bash \
-    ca-certificates \
+    wget \
+    netcat-openbsd \
+    iputils-ping \
+    procps \
     tzdata \
-    && rm -rf /var/lib/apt/lists/*
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
+    && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
+    && echo $TZ > /etc/timezone
 
 # =========================
 # 哪吒 Agent 安装
