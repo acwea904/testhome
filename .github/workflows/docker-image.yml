@@ -25,4 +25,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/testhome:latest
+          tags: ghcr.io/acwea904/testhome:latest
