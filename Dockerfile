@@ -28,15 +28,6 @@ FROM node:18-slim
 ENV NODE_ENV=production
 ENV PORT=3000
 
-# 哪吒 Agent 参数（非敏感信息）
-ENV NEZHA_SERVER=agent.xinxi.pp.ua:8008
-ENV NEZHA_TLS=false
-# 敏感信息将通过构建参数传递
-ARG NEZHA_CLIENT_SECRET
-ARG NEZHA_CLIENT_UUID
-# 哪吒 Agent 安装脚本版本
-ENV NEZHA_SCRIPT_VERSION=main
-
 # 安装哪吒 Agent 依赖
 RUN apt-get update && apt-get install -y \
     unzip \
@@ -54,10 +45,6 @@ WORKDIR /opt/nezha
 # 复制启动脚本
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
-
-# 下载哪吒 Agent 安装脚本
-RUN curl -L "https://raw.githubusercontent.com/nezhahq/scripts/${NEZHA_SCRIPT_VERSION}/agent/install.sh" -o agent.sh \
-    && chmod +x agent.sh
 
 # =========================
 # Next.js 运行文件
