@@ -28,12 +28,12 @@ FROM node:18-slim
 ENV NODE_ENV=production
 ENV PORT=3000
 
-# 哪吒 Agent 参数 (可在运行容器时通过环境变量覆盖)
+# 哪吒 Agent 参数（非敏感信息）
 ENV NEZHA_SERVER=agent.xinxi.pp.ua:8008
 ENV NEZHA_TLS=false
-ENV NEZHA_CLIENT_SECRET=1FyZCXk9XGSarBQrCVE8WjyzXTfJFqH4
-# 使用 UUID 替代 client_secret (二选一)
-ENV NEZHA_CLIENT_UUID=
+# 敏感信息将通过构建参数传递
+ARG NEZHA_CLIENT_SECRET
+ARG NEZHA_CLIENT_UUID
 # 哪吒 Agent 安装脚本版本
 ENV NEZHA_SCRIPT_VERSION=main
 
