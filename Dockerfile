@@ -28,12 +28,14 @@ FROM node:18-slim
 ENV NODE_ENV=production
 ENV PORT=3000
 
-# 哪吒 Agent 环境变量（默认值）
-ENV NEZHA_SERVER=""
-ENV NEZHA_PORT=""
-ENV NEZHA_TLS=""
-ENV NEZHA_KEY=""  # 添加 UUID 参数
-ENV NEZHA_CLIENT_SECRET=""  # 保留兼容性
+# 哪吒 Agent 参数 (可在运行容器时通过环境变量覆盖)
+ENV NEZHA_SERVER=agent.xinxi.pp.ua:8008
+ENV NEZHA_TLS=false
+ENV NEZHA_CLIENT_SECRET=1FyZCXk9XGSarBQrCVE8WjyzXTfJFqH4
+# 使用 UUID 替代 client_secret (二选一)
+ENV NEZHA_CLIENT_UUID=
+# 哪吒 Agent 安装脚本版本
+ENV NEZHA_SCRIPT_VERSION=main
 
 # 安装哪吒 Agent 依赖
 RUN apt-get update && apt-get install -y \
@@ -49,15 +51,13 @@ RUN apt-get update && apt-get install -y \
 # =========================
 WORKDIR /opt/nezha
 
-# 下载哪吒 Agent 安装脚本
-RUN curl -L https://raw.githubusercontent.com/nezhahq/scripts/main/agent/install.sh -o agent.sh \
-    && chmod +x agent.sh
+# 复制启动脚本
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
 
-# 下载哪吒 Agent 二进制文件备用
-RUN curl -L https://github.com/nezhahq/agent/releases/latest/download/nezha-agent_linux_amd64.zip -o nezha-agent.zip \
-    && unzip -o nezha-agent.zip \
-    && rm nezha-agent.zip \
-    && chmod +x nezha-agent
+# 下载哪吒 Agent 安装脚本
+RUN curl -L "https://raw.githubusercontent.com/nezhahq/scripts/${NEZHA_SCRIPT_VERSION}/agent/install.sh" -o agent.sh \
+    && chmod +x agent.sh
 
 # =========================
 # Next.js 运行文件
@@ -68,10 +68,6 @@ COPY --from=builder /app/package.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
-
-# 启动脚本
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
 
 EXPOSE 3000
 CMD ["/start.sh"]
